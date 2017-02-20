@@ -19,6 +19,15 @@ using std::endl;
 // using std::less;
 // using std::greater;
 
+void PrintElement(int i, int j) { std::cout << i << " "; }
+void PrintElement(int i) { std::cout << i << " "; }
+
+struct EchoElement {
+  void operator()(int i, int j) { std::cout << i << " ij "; }
+  void operator()(int i) { std::cout << i << "i "; }
+  void operator()(float i) { std::cout << i << "f "; }
+};
+
 int main() {
   {
     list<int> l(5, 1);
@@ -26,7 +35,21 @@ int main() {
     list<int> l2;
     l2.splice(l2.begin(), l, l.begin());
     std::cout << "l2:" << std::endl;
-    for_each(l2.begin(), l2.end(), [](int i) { std::cout << i << " "; });
+    for_each(l2.begin(), l2.end(), EchoElement());  // succeed
+    std::cout << std::endl;
+
+    for_each(l2.begin(), l2.end(),
+             [](int i) { std::cout << i << " "; });  // succeed
+    std::cout << std::endl;
+
+    {
+      /*  ERROR: no matching function for call to ‘for_each(list<int>::iterator,
+       * list<int>::iterator, <unresolved overloaded function type>)’ */
+
+      //      for_each(l2.begin(), l2.end(), PrintElement);
+      //      std::cout << std::endl;
+    }
+
     std::cout << "------------------" << std::endl;
 
     l.insert(l.begin(), 3);
